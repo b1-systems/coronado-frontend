@@ -1,19 +1,27 @@
 import React from 'react';
 
-import { Button, Stack } from '@mui/material';
+import {Button, Stack} from '@mui/material';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 
 var QRCode = require('qrcode.react');
 const termin = {
-  name: '__PLATZHALTERBennö Benson',
-  vac: '__PLATZHALTERBiontec',
-  date: '__PLATZHALTER10-12-21-10:30',
-  id: '__PLATZHALTERqwertzuioplkjhgfdsayxcvbn',
+  error: '__error Platzhalter',
+  data: {
+    name: '__PLATZHALTERBennö Benson',
+    vac: '__PLATZHALTERBiontec',
+    date: '__PLATZHALTER10-12-21-10:30',
+    id: '__PLATZHALTERqwertzuioplkjhgfdsayxcvbn',
+  },
 };
 
-export default function Review() {
+export default function Review(props: {
+  respName: string;
+  respDate: string;
+  respVac: string;
+  respId: string;
+}) {
   const downloadQR = () => {
     const canvas = document.getElementById('QR-Code-img') as HTMLCanvasElement;
     if (canvas !== null) {
@@ -22,7 +30,7 @@ export default function Review() {
         .replace('image/png', 'image/octet-stream');
       let downloadLink = document.createElement('a');
       downloadLink.href = pngUrl;
-      downloadLink.download = 'QR-Code-img.png';
+      downloadLink.download = `time_${props.respDate}_QR-Code-img.png`;
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);
@@ -31,25 +39,37 @@ export default function Review() {
 
   return (
     <React.Fragment>
-      <Stack sx={{pt: 4}} direction='row' spacing={2} justifyContent='center'>
+      <Stack
+        sx={{pt: 4}}
+        direction='row'
+        spacing={2}
+        justifyContent='center'
+        id='id-for-downloade'
+      >
         <List dense>
           <ListItem sx={{py: 0, px: 0}}>
-            <ListItemText primary='Impftermin für: ' secondary={termin.name} />
+            <ListItemText
+              primary='Impftermin für: '
+              secondary={props.respName}
+            />
           </ListItem>
           <ListItem sx={{py: 0, px: 0}}>
-            <ListItemText primary='Impftermin am: ' secondary={termin.date} />
+            <ListItemText
+              primary='Impftermin am: '
+              secondary={props.respDate}
+            />
           </ListItem>
           <ListItem sx={{py: 0, px: 0}}>
-            <ListItemText primary='Impfstoff: ' secondary={termin.vac} />
+            <ListItemText primary='Impfstoff: ' secondary={props.respVac} />
           </ListItem>
         </List>
         <List dense>
           <ListItem sx={{py: 0, px: 0}}>
-            <ListItemText primary='ID: ' secondary={termin.id} />
+            <ListItemText primary='ID: ' secondary={props.respId} />
           </ListItem>
           <ListItem sx={{py: 0, px: 0}}>
             <QRCode
-              value={termin.id}
+              value={props.respId}
               id='QR-Code-img'
               size={200}
               level={'H'}

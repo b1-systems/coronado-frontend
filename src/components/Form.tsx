@@ -5,14 +5,14 @@ import * as React from 'react';
 import DatePicker from 'react-datepicker';
 
 import {
-	Alert,
-	FormControl,
-	Grid,
-	InputLabel,
-	MenuItem,
-	Select,
-	SelectChangeEvent,
-	TextField,
+  Alert,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  TextField,
 } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
@@ -22,10 +22,11 @@ import Paper from '@mui/material/Paper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import {createTheme, ThemeProvider} from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
+import {fetchVacRequest} from '../api';
 import Review from './Review';
 
 const steps = ['Daten Angeben', 'QR-Code'];
@@ -41,6 +42,11 @@ export default function Checkout() {
   const [date, setDate] = React.useState<Date | null>(new Date());
   const [error, setError] = React.useState('');
 
+  const [respName, setRespName] = React.useState('');
+  const [respDate, setRespDate] = React.useState('');
+  const [respVac, setRespVac] = React.useState('');
+  const [respId, setRespId] = React.useState('');
+
   const diffDays = () => {
     if (date !== null) {
       const dateNow = new Date();
@@ -55,12 +61,120 @@ export default function Checkout() {
     return 0;
   };
 
+  // const testHandler = () => {
+  //   setActiveStep(1);
+  // };
+
   const handleChangeVacState = (event: SelectChangeEvent) => {
     setVacState(event.target.value as string);
   };
 
   const handleChangeVac = (event: SelectChangeEvent) => {
     setVac(event.target.value as string);
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    let request = {
+      firstname: firstname,
+      lastname: lastname,
+      vacState: vacState,
+      vac: vac,
+      date: date,
+    };
+    if (vacState === 'ungeimpft') {
+      fetchVacRequest(request)
+        .then((response) => {
+          return response.json();
+        })
+        .then((respData) => {
+          if (typeof respData.data === 'object') {
+            setRespName(respData.data.name);
+            setRespDate(respData.data.date);
+            setRespVac(respData.data.vac);
+            setRespId(respData.data.id);
+            setError('');
+            setActiveStep(activeStep + 1);
+          } else {
+            setError(respData.error);
+          }
+        });
+    }
+    if (vacState === 'erste Impfung erhalten') {
+      if (vac === 'Johnson&Johnson') {
+        setError(
+          'Johnson&Johnson hat nur eine Impfdosis, sollten sie geimpft wurden sein wählen sie bitte "durchgeimpft".',
+        );
+      }
+      if (diffDays() >= 28) {
+        fetchVacRequest(request)
+          .then((response) => {
+            return response.json();
+          })
+          .then((respData) => {
+            if (typeof respData.data === 'object') {
+              setRespName(respData.data.name);
+              setRespDate(respData.data.date);
+              setRespVac(respData.data.vac);
+              setRespId(respData.data.id);
+              setError('');
+              setActiveStep(activeStep + 1);
+            } else {
+              setError(respData.error);
+            }
+          });
+      }
+    } else {
+      setError(
+        'Zwischen Erst- und Zweit-Impfung müssen mindestens 28 Tage liegen.',
+      );
+    }
+    if (vacState === 'durchgeimpft') {
+      if (vac === 'Johnson&Johnson' && diffDays() >= 28) {
+        fetchVacRequest(request)
+          .then((response) => {
+            return response.json();
+          })
+          .then((respData) => {
+            if (typeof respData.data === 'object') {
+              setRespName(respData.data.name);
+              setRespDate(respData.data.date);
+              setRespVac(respData.data.vac);
+              setRespId(respData.data.id);
+              setError('');
+              setActiveStep(activeStep + 1);
+            } else {
+              setError(respData.error);
+            }
+          });
+      }
+    } else {
+      setError(
+        'eine BoosterImpfung fällt bei Johnson&Johnson erst nach frühstens 28 Tagen an.',
+      );
+    }
+    if (vac !== 'Johnson&Johnson') {
+      if (diffDays() >= 182) {
+        fetchVacRequest(request)
+          .then((response) => {
+            return response.json();
+          })
+          .then((respData) => {
+            if (typeof respData.data === 'object') {
+              setRespName(respData.data.name);
+              setRespDate(respData.data.date);
+              setRespVac(respData.data.vac);
+              setRespId(respData.data.id);
+              setError('');
+              setActiveStep(activeStep + 1);
+            } else {
+              setError(respData.error);
+            }
+          });
+      }
+    } else {
+      setError('Eine Booster Impfung fällt erst nach einem halben Jahr an.');
+    }
   };
 
   function getStepContent(step: number) {
@@ -159,67 +273,28 @@ export default function Checkout() {
             <Button variant='contained' type='submit' sx={{mt: 3, ml: 1}}>
               Impftermin erhalten
             </Button>
+            {/* <Button
+              variant='contained'
+              onClick={testHandler}
+              sx={{mt: 3, ml: 1}}
+            >
+              test
+            </Button> */}
           </form>
         );
       case 1:
-        return <Review />;
+        return (
+          <Review
+            respName={respName}
+            respDate={respDate}
+            respVac={respVac}
+            respId={respId}
+          />
+        );
       default:
         throw new Error('Unknown step');
     }
   }
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    let request = {
-      firstname: firstname,
-      lastname: lastname,
-      vacState: vacState,
-      vac: vac,
-    };
-    if (vacState === 'ungeimpft') {
-      console.log(request); //hier fetch
-      setError('');
-      setActiveStep(activeStep + 1);
-    }
-    if (vacState === 'erste Impfung erhalten') {
-      if (vac === 'Johnson&Johnson') {
-        setError(
-          'Johnson&Johnson hat nur eine Impfdosis, sollten sie geimpft wurden sein wählen sie bitte "durchgeimpft".',
-        );
-      }
-      if (diffDays() >= 28) {
-        console.log(request); //hier fetch
-        setError('');
-        setActiveStep(activeStep + 1);
-      } else {
-        setError(
-          'Zwischen Erst- und Zweit-Impfung müssen mindestens 28 Tage liegen.',
-        );
-      }
-    }
-    if (vacState === 'durchgeimpft') {
-      if (vac === 'Johnson&Johnson' && diffDays() >= 28) {
-        console.log(request); //hier fetch
-        setError('');
-        setActiveStep(activeStep + 1);
-      } else {
-        setError(
-          'eine BoosterImpfung fällt bei Johnson&Johnson erst nach frühstens 28 Tagen an.',
-        );
-      }
-      if (vac !== 'Johnson&Johnson') {
-        if (diffDays() >= 182) {
-          console.log(request); //hier fetch
-          setError('');
-          setActiveStep(activeStep + 1);
-        } else {
-          setError(
-            'Eine Booster Impfung fällt erst nach einem halben Jahr an.',
-          );
-        }
-      }
-    }
-  };
 
   return (
     <ThemeProvider theme={theme}>
