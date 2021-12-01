@@ -48,8 +48,7 @@ export default function Checkout() {
   const [error, setError] = React.useState('');
 
   const [respName, setRespName] = React.useState('');
-  const [respDate, setRespDate] = React.useState('');
-  const [respVac, setRespVac] = React.useState('');
+  const [respDate, setRespDate] = React.useState(0);
   const [respId, setRespId] = React.useState('');
 
   const [open, setOpen] = React.useState(false);
@@ -84,15 +83,14 @@ export default function Checkout() {
     setDate(new Date());
     setError('');
     setRespName('');
-    setRespDate('');
-    setRespVac('');
+    setRespDate(0);
     setRespId('');
     setActiveStep(0);
   };
 
-  // const testHandler = () => {
-  //   setActiveStep(1);
-  // };
+  const testHandler = () => {
+    setActiveStep(1);
+  };
 
   const vacDate = () => {
     if (date !== null) {
@@ -125,11 +123,10 @@ export default function Checkout() {
           return response.json();
         })
         .then((respData) => {
-          if (typeof respData.data === 'object') {
-            setRespName(respData.data.name);
-            setRespDate(respData.data.date);
-            setRespVac(respData.data.vac);
-            setRespId(respData.data.id);
+          if (typeof respData.ticket.id === 'string') {
+            setRespName(request.firstname + ' ' + request.lastname);
+            setRespDate(respData.ticket.date);
+            setRespId(respData.ticket.id);
             setError('');
             setActiveStep(activeStep + 1);
           } else {
@@ -144,22 +141,7 @@ export default function Checkout() {
         );
       }
       if (diffDays() >= 28) {
-        fetchVacRequest(request)
-          .then((response) => {
-            return response.json();
-          })
-          .then((respData) => {
-            if (typeof respData.data === 'object') {
-              setRespName(respData.data.name);
-              setRespDate(respData.data.date);
-              setRespVac(respData.data.vac);
-              setRespId(respData.data.id);
-              setError('');
-              setActiveStep(activeStep + 1);
-            } else {
-              setError(respData.error);
-            }
-          });
+        fetchVacRequest(request);
       }
     } else {
       setError(
@@ -168,22 +150,7 @@ export default function Checkout() {
     }
     if (vacState === 'durchgeimpft') {
       if (vac === 'Johnson&Johnson' && diffDays() >= 28) {
-        fetchVacRequest(request)
-          .then((response) => {
-            return response.json();
-          })
-          .then((respData) => {
-            if (typeof respData.data === 'object') {
-              setRespName(respData.data.name);
-              setRespDate(respData.data.date);
-              setRespVac(respData.data.vac);
-              setRespId(respData.data.id);
-              setError('');
-              setActiveStep(activeStep + 1);
-            } else {
-              setError(respData.error);
-            }
-          });
+        fetchVacRequest(request);
       }
     } else {
       setError(
@@ -192,22 +159,7 @@ export default function Checkout() {
     }
     if (vac !== 'Johnson&Johnson') {
       if (diffDays() >= 182) {
-        fetchVacRequest(request)
-          .then((response) => {
-            return response.json();
-          })
-          .then((respData) => {
-            if (typeof respData.data === 'object') {
-              setRespName(respData.data.name);
-              setRespDate(respData.data.date);
-              setRespVac(respData.data.vac);
-              setRespId(respData.data.id);
-              setError('');
-              setActiveStep(activeStep + 1);
-            } else {
-              setError(respData.error);
-            }
-          });
+        fetchVacRequest(request);
       }
     } else {
       setError('Eine Booster Impfung fällt erst nach einem halben Jahr an.');
@@ -310,13 +262,13 @@ export default function Checkout() {
             <Button variant='contained' type='submit' sx={{mt: 3, ml: 1}}>
               Impftermin erhalten
             </Button>
-            {/* <Button
+            <Button
               variant='contained'
               onClick={testHandler}
               sx={{mt: 3, ml: 1}}
             >
               Test
-            </Button> */}
+            </Button>
           </form>
         );
       case 1:
@@ -347,12 +299,7 @@ export default function Checkout() {
                 </DialogActions>
               </Dialog>
             </div>
-            <Review
-              respName={respName}
-              respDate={respDate}
-              respVac={respVac}
-              respId={respId}
-            />
+            <Review respName={respName} respDate={respDate} respId={respId} />
             <Button
               variant='contained'
               onClick={handleClickOpen}

@@ -9,8 +9,7 @@ var QRCode = require('qrcode.react');
 
 export default function Review(props: {
   respName: string;
-  respDate: string;
-  respVac: string;
+  respDate: number;
   respId: string;
 }) {
   const downloadQR = () => {
@@ -49,9 +48,6 @@ export default function Review(props: {
               primary='Impftermin am: '
               secondary={props.respDate}
             />
-          </ListItem>
-          <ListItem sx={{py: 0, px: 0}}>
-            <ListItemText primary='Impfstoff: ' secondary={props.respVac} />
           </ListItem>
         </List>
         <List dense>

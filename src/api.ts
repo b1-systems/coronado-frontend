@@ -17,10 +17,10 @@ export const fetchVacRequest = async (vacRequest: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({key: vacRequest}),
+    body: JSON.stringify({vacRequest}),
   }).then((response) => {
     if (response.ok) {
-      return response.json();
+      return response;
     } else {
       throw new Error(
         `Could not fetch auditlogs. Backend response code: ${response.status}`,
