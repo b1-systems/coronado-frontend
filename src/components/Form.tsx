@@ -88,10 +88,6 @@ export default function Checkout() {
     setActiveStep(0);
   };
 
-  const testHandler = () => {
-    setActiveStep(1);
-  };
-
   const vacDate = () => {
     if (date !== null) {
       return date.getTime();
@@ -261,13 +257,6 @@ export default function Checkout() {
             </Grid>
             <Button variant='contained' type='submit' sx={{mt: 3, ml: 1}}>
               Impftermin erhalten
-            </Button>
-            <Button
-              variant='contained'
-              onClick={testHandler}
-              sx={{mt: 3, ml: 1}}
-            >
-              Test
             </Button>
           </form>
         );

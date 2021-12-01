@@ -17,7 +17,7 @@ export const fetchVacRequest = async (vacRequest: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({vacRequest}),
+    body: JSON.stringify(vacRequest),
   }).then((response) => {
     if (response.ok) {
       return response;
