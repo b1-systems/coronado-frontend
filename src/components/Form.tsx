@@ -18,6 +18,11 @@ import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import Paper from '@mui/material/Paper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
@@ -47,6 +52,15 @@ export default function Checkout() {
   const [respVac, setRespVac] = React.useState('');
   const [respId, setRespId] = React.useState('');
 
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   const diffDays = () => {
     if (date !== null) {
       const dateNow = new Date();
@@ -62,6 +76,7 @@ export default function Checkout() {
   };
 
   const backHandler = () => {
+    setOpen(false);
     setFirstname('');
     setLastname('');
     setVac('');
@@ -74,6 +89,10 @@ export default function Checkout() {
     setRespId('');
     setActiveStep(0);
   };
+
+  // const testHandler = () => {
+  //   setActiveStep(1);
+  // };
 
   const handleChangeVacState = (event: SelectChangeEvent) => {
     setVacState(event.target.value as string);
@@ -283,11 +302,43 @@ export default function Checkout() {
             <Button variant='contained' type='submit' sx={{mt: 3, ml: 1}}>
               Impftermin erhalten
             </Button>
+            {/* <Button
+              variant='contained'
+              onClick={testHandler}
+              sx={{mt: 3, ml: 1}}
+            >
+              Test
+            </Button> */}
           </form>
         );
       case 1:
         return (
           <>
+            <div>
+              <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby='alert-dialog-title'
+                aria-describedby='alert-dialog-description'
+              >
+                <DialogTitle id='alert-dialog-title'>
+                  {'Haben sie den QR-Code gespeichert?'}
+                </DialogTitle>
+                <DialogContent>
+                  <DialogContentText id='alert-dialog-description'>
+                    Wenn sie den Code nicht speichern können sie sich nicht
+                    impfen lassen. Es ist nicht möglich einen weiterin Termin
+                    auf Ihren Namen zu erhalten.
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleClose}>Nein</Button>
+                  <Button onClick={backHandler} autoFocus>
+                    Ja
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </div>
             <Review
               respName={respName}
               respDate={respDate}
@@ -296,7 +347,7 @@ export default function Checkout() {
             />
             <Button
               variant='contained'
-              onClick={backHandler}
+              onClick={handleClickOpen}
               sx={{mt: 3, ml: 1}}
             >
               weiteren Termin erstellen

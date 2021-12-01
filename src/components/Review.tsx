@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Button, Stack } from '@mui/material';
+import { Alert, Button, Stack } from '@mui/material';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -69,6 +69,18 @@ export default function Review(props: {
           </ListItem>
         </List>
       </Stack>
+      <Alert severity='error'>
+        {'Hinweis zur Impfung muss mitgebracht werden:'}
+        <br />
+        {'- ausgedruckter QR-Code oder Anmelde-ID,'}
+        <br />
+        {'- Personalausweis & Impfpass.'}
+        <br />
+        <br />
+        {
+          'Bei Nichterfüllung der Impfvoraussetzungen werden Sie vor Ort abgewiesen.'
+        }
+      </Alert>
       <Button variant='contained' sx={{mt: 3, ml: 1}} onClick={downloadQR}>
         Download QR
       </Button>
