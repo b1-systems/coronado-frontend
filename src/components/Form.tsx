@@ -132,7 +132,7 @@ export default function Checkout() {
       lastname: lastname,
       vacState: vacState,
       vac: vac,
-      date: vacDate(),
+      date: Math.round(vacDate() / 1000),
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     };
     if (request.vac.startsWith('Mo')) {
