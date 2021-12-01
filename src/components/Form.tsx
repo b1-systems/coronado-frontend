@@ -110,7 +110,9 @@ export default function Checkout() {
       vacState: vacState,
       vac: vac,
       date: date,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     };
+    console.log(request);
     if (vacState === 'ungeimpft') {
       fetchVacRequest(request)
         .then((response) => {

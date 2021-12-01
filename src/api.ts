@@ -8,6 +8,7 @@ export const fetchVacRequest = async (vacRequest: {
   lastname: string;
   vacState: string;
   vac: string;
+  timezone: string;
 }): Promise<Response> =>
   fetch(`${baseUrl()}/rest/ticket`, {
     method: 'post',
