@@ -135,12 +135,7 @@ export default function Checkout() {
       date: Math.round(vacDate() / 1000),
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     };
-    if (request.vac.startsWith('Mo')) {
-      console.log('matching vaccine');
-      request.vac = vaccines[1];
-    } 
     if (vacState === 'ungeimpft') {
-      console.log(request.vac.length);
       fetchAndHandleResponse(request);
     }
     if (vacState === 'erste Impfung erhalten') {
