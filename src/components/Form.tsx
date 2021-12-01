@@ -94,6 +94,13 @@ export default function Checkout() {
   //   setActiveStep(1);
   // };
 
+  const vacDate = () => {
+    if (date !== null) {
+      return date.getTime();
+    }
+    return new Date().getTime();
+  };
+
   const handleChangeVacState = (event: SelectChangeEvent) => {
     setVacState(event.target.value as string);
   };
@@ -109,10 +116,9 @@ export default function Checkout() {
       lastname: lastname,
       vacState: vacState,
       vac: vac,
-      date: date,
+      date: vacDate(),
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     };
-    console.log(request);
     if (vacState === 'ungeimpft') {
       fetchVacRequest(request)
         .then((response) => {
