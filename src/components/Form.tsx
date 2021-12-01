@@ -5,14 +5,14 @@ import * as React from 'react';
 import DatePicker from 'react-datepicker';
 
 import {
-  Alert,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  TextField,
+	Alert,
+	FormControl,
+	Grid,
+	InputLabel,
+	MenuItem,
+	Select,
+	SelectChangeEvent,
+	TextField,
 } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
@@ -22,11 +22,11 @@ import Paper from '@mui/material/Paper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
-import {createTheme, ThemeProvider} from '@mui/material/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
-import {fetchVacRequest} from '../api';
+import { fetchVacRequest } from '../api';
 import Review from './Review';
 
 const steps = ['Daten Angeben', 'QR-Code'];
@@ -61,9 +61,19 @@ export default function Checkout() {
     return 0;
   };
 
-  // const testHandler = () => {
-  //   setActiveStep(1);
-  // };
+  const backHandler = () => {
+    setFirstname('');
+    setLastname('');
+    setVac('');
+    setVacState('');
+    setDate(new Date());
+    setError('');
+    setRespName('');
+    setRespDate('');
+    setRespVac('');
+    setRespId('');
+    setActiveStep(0);
+  };
 
   const handleChangeVacState = (event: SelectChangeEvent) => {
     setVacState(event.target.value as string);
@@ -273,23 +283,25 @@ export default function Checkout() {
             <Button variant='contained' type='submit' sx={{mt: 3, ml: 1}}>
               Impftermin erhalten
             </Button>
-            {/* <Button
-              variant='contained'
-              onClick={testHandler}
-              sx={{mt: 3, ml: 1}}
-            >
-              test
-            </Button> */}
           </form>
         );
       case 1:
         return (
-          <Review
-            respName={respName}
-            respDate={respDate}
-            respVac={respVac}
-            respId={respId}
-          />
+          <>
+            <Review
+              respName={respName}
+              respDate={respDate}
+              respVac={respVac}
+              respId={respId}
+            />
+            <Button
+              variant='contained'
+              onClick={backHandler}
+              sx={{mt: 3, ml: 1}}
+            >
+              weiteren Termin erstellen
+            </Button>
+          </>
         );
       default:
         throw new Error('Unknown step');

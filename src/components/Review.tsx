@@ -1,20 +1,11 @@
 import React from 'react';
 
-import {Button, Stack} from '@mui/material';
+import { Button, Stack } from '@mui/material';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 
 var QRCode = require('qrcode.react');
-const termin = {
-  error: '__error Platzhalter',
-  data: {
-    name: '__PLATZHALTERBennö Benson',
-    vac: '__PLATZHALTERBiontec',
-    date: '__PLATZHALTER10-12-21-10:30',
-    id: '__PLATZHALTERqwertzuioplkjhgfdsayxcvbn',
-  },
-};
 
 export default function Review(props: {
   respName: string;
