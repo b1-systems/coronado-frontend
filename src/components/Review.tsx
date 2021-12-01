@@ -9,9 +9,10 @@ var QRCode = require('qrcode.react');
 
 export default function Review(props: {
   respName: string;
-  respDate: number;
+  respTimestamp: number;
   respId: string;
 }) {
+  let respDate = (new Date(props.respTimestamp*1000)).toLocaleDateString('de', {'hour':'numeric', 'minute':'numeric'});
   const downloadQR = () => {
     const canvas = document.getElementById('QR-Code-img') as HTMLCanvasElement;
     if (canvas !== null) {
@@ -20,7 +21,7 @@ export default function Review(props: {
         .replace('image/png', 'image/octet-stream');
       let downloadLink = document.createElement('a');
       downloadLink.href = pngUrl;
-      downloadLink.download = `time_${props.respDate}_QR-Code-img.png`;
+      downloadLink.download = `time_${respDate}_QR-Code-img.png`;
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);
@@ -46,7 +47,7 @@ export default function Review(props: {
           <ListItem sx={{py: 0, px: 0}}>
             <ListItemText
               primary='Impftermin am: '
-              secondary={props.respDate}
+              secondary={respDate}
             />
           </ListItem>
         </List>

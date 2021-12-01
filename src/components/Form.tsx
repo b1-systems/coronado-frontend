@@ -36,6 +36,10 @@ import Review from './Review';
 
 const steps = ['Daten Angeben', 'QR-Code'];
 
+const vaccines = [
+  'BioNTech', 'Moderna', 'AstraZeneca', 'Johnson&Johnson'
+];
+
 const theme = createTheme();
 export default function Checkout() {
   const [activeStep, setActiveStep] = React.useState(0);
@@ -103,6 +107,24 @@ export default function Checkout() {
     setVac(event.target.value as string);
   };
 
+  const fetchAndHandleResponse = (request: any) => {
+    fetchVacRequest(request)
+    .then((response) => {
+      return response.json();
+    })
+    .then((respData) => {
+      if (typeof respData.ticket.id === 'string') {
+        setRespName(request.firstname + ' ' + request.lastname);
+        setRespDate(respData.ticket.date);
+        setRespId(respData.ticket.id);
+        setError('');
+        setActiveStep(activeStep + 1);
+      } else {
+        setError(respData.error);
+      }
+    });
+  }
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     let request = {
@@ -113,52 +135,43 @@ export default function Checkout() {
       date: vacDate(),
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     };
+    if (request.vac.startsWith('Mo')) {
+      console.log('matching vaccine');
+      request.vac = vaccines[1];
+    } 
     if (vacState === 'ungeimpft') {
-      fetchVacRequest(request)
-        .then((response) => {
-          return response.json();
-        })
-        .then((respData) => {
-          if (typeof respData.ticket.id === 'string') {
-            setRespName(request.firstname + ' ' + request.lastname);
-            setRespDate(respData.ticket.date);
-            setRespId(respData.ticket.id);
-            setError('');
-            setActiveStep(activeStep + 1);
-          } else {
-            setError(respData.error);
-          }
-        });
+      console.log(request.vac.length);
+      fetchAndHandleResponse(request);
     }
     if (vacState === 'erste Impfung erhalten') {
       if (vac === 'Johnson&Johnson') {
         setError(
-          'Johnson&Johnson hat nur eine Impfdosis, sollten sie geimpft wurden sein wählen sie bitte "durchgeimpft".',
+          'Johnson&Johnson hat nur eine Impfdosis, sollten Sie geimpft wurden sein wählen sie bitte "durchgeimpft".',
         );
       }
       if (diffDays() >= 28) {
-        fetchVacRequest(request);
+        fetchAndHandleResponse(request);
+      } else {
+        setError(
+          'Bis zur Boosterimpfung müssen mindestens 28 Tage vergangen sein.',
+        );
       }
-    } else {
-      setError(
-        'Zwischen Erst- und Zweit-Impfung müssen mindestens 28 Tage liegen.',
-      );
-    }
-    if (vacState === 'durchgeimpft') {
-      if (vac === 'Johnson&Johnson' && diffDays() >= 28) {
-        fetchVacRequest(request);
+    } else if (vacState === 'durchgeimpft') {
+      if (vac === 'Johnson&Johnson') {
+        if (diffDays() >= 28) {
+          fetchAndHandleResponse(request);
+        } else {
+          setError(
+            'Eine BoosterImpfung fällt bei Johnson&Johnson erst nach frühstens 28 Tagen an.',
+          );
+        }
+      } else {
+        if (diffDays() >= 182) {
+          fetchAndHandleResponse(request);
+        } else {
+          setError('Eine Booster Impfung fällt erst nach einem halben Jahr an.');
+        }
       }
-    } else {
-      setError(
-        'eine BoosterImpfung fällt bei Johnson&Johnson erst nach frühstens 28 Tagen an.',
-      );
-    }
-    if (vac !== 'Johnson&Johnson') {
-      if (diffDays() >= 182) {
-        fetchVacRequest(request);
-      }
-    } else {
-      setError('Eine Booster Impfung fällt erst nach einem halben Jahr an.');
     }
   };
 
@@ -208,10 +221,11 @@ export default function Checkout() {
                     label='Impfstoff'
                     onChange={handleChangeVac}
                   >
-                    <MenuItem value='Bi­oN­Tech'>Bi­oN­Tech</MenuItem>
-                    <MenuItem value='Mo­der­na'>Mo­der­na</MenuItem>
-                    <MenuItem value='Astra­Zene­ca'>Astra­Zene­ca</MenuItem>
-                    <MenuItem value='Johnson&Johnson'>Johnson&Johnson</MenuItem>
+                    {
+                      vaccines.map((v, idx)=>
+                        <MenuItem key={idx} value={v}>{v}</MenuItem>
+                      )
+                    }
                   </Select>
                 </FormControl>
               </Grid>
@@ -276,8 +290,7 @@ export default function Checkout() {
                 <DialogContent>
                   <DialogContentText id='alert-dialog-description'>
                     Wenn sie den Code nicht speichern können sie sich nicht
-                    impfen lassen. Es ist nicht möglich einen weiterin Termin
-                    auf Ihren Namen zu erhalten.
+                    impfen lassen.
                   </DialogContentText>
                 </DialogContent>
                 <DialogActions>
@@ -288,7 +301,7 @@ export default function Checkout() {
                 </DialogActions>
               </Dialog>
             </div>
-            <Review respName={respName} respDate={respDate} respId={respId} />
+            <Review respName={respName} respTimestamp={respDate} respId={respId} />
             <Button
               variant='contained'
               onClick={handleClickOpen}

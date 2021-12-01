@@ -14,8 +14,9 @@ export const fetchVacRequest = async (vacRequest: {
   fetch(`${baseUrl()}/rest/ticket`, {
     method: 'post',
     headers: {
-      Accept: 'application/json',
+      'Accept': 'application/json',
       'Content-Type': 'application/json',
+      'charset': "utf-8",
     },
     body: JSON.stringify(vacRequest),
   }).then((response) => {
