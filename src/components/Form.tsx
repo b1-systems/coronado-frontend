@@ -113,17 +113,19 @@ export default function Checkout() {
       return response.json();
     })
     .then((respData) => {
-      if (typeof respData.ticket.id === 'string') {
+      if (respData && respData.ticket) {
         setRespName(request.firstname + ' ' + request.lastname);
         setRespDate(respData.ticket.date);
         setRespId(respData.ticket.id);
         setError('');
         setActiveStep(activeStep + 1);
-      } else {
+      } else if (respData && respData.error) {
         setError(respData.error);
+      } else {
+        setError('Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später noch einmal.');
       }
     });
-  }
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
